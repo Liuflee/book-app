@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Libros Populares</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="searchBooks($event)"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let book of books">
+      <ion-thumbnail slot="start">
+        <img [src]="book.volumeInfo.imageLinks?.thumbnail" alt="Book Thumbnail">
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ book.volumeInfo.title }}</h2>
+        <p>{{ book.volumeInfo.authors?.join(', ') }}</p>
+        <p>{{ book.volumeInfo.publishedDate }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
