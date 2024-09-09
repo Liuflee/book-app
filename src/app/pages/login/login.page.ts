@@ -33,10 +33,11 @@ export class LoginPage {
 
   login() {
     if (this.username && this.password) {
+      // Guardar el nombre de usuario en el almacenamiento local
+      localStorage.setItem('username', this.username);
       this.navCtrl.navigateForward('/home');
     }
   }
-
   goToResetPassword() {
     this.navCtrl.navigateForward('/reset-password');
   }

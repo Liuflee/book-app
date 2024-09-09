@@ -7,11 +7,15 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage {
-  username: string = 'Gato epico';
+  username: string = '';
 
-  constructor(private navCtrl: NavController) {}
+  constructor(private navCtrl: NavController) {
+    // Recuperar el nombre de usuario del almacenamiento local
+    this.username = localStorage.getItem('username') || 'Invitado';
+  }
 
   goToBookPage() {
     this.navCtrl.navigateForward('/books');
   }
 }
+  

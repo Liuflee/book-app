@@ -1,11 +1,14 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
     <ion-title>Bienvenido</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <h2>Bienvenido, {{username}}!</h2>
+  <h2>Bienvenido/a, {{username}}!</h2>
   <p>Gracias por iniciar sesión</p>
 
   <ion-button expand="block" fill="clear" (click)="goToBookPage()">Ir a ver los libros</ion-button>
