@@ -31,6 +31,17 @@ export class LoginPage {
 
   constructor(private navCtrl: NavController) {}
 
+  // Este evento se ejecuta cada vez que entras a la página
+  ionViewWillEnter() {
+    this.clearFields();
+  }
+
+  // Función para limpiar los campos
+  clearFields() {
+    this.username = '';
+    this.password = '';
+  }
+
   login() {
     if (this.username && this.password) {
       // Guardar el nombre de usuario en el almacenamiento local
@@ -38,6 +49,7 @@ export class LoginPage {
       this.navCtrl.navigateForward('/home');
     }
   }
+
   goToResetPassword() {
     this.navCtrl.navigateForward('/reset-password');
   }

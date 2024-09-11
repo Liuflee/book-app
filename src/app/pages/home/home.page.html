@@ -8,8 +8,16 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <h2>Bienvenido/a, {{username}}!</h2>
-  <p>Gracias por iniciar sesión</p>
 
-  <ion-button expand="block" fill="clear" (click)="goToBookPage()">Ir a ver los libros</ion-button>
+  <div class="image-container">
+    <img src="assets/images/silly-cat.gif" alt="Avatar" class="login-image">
+  </div>
+
+  <div class="welcome-text">
+    <h2>Bienvenido/a, {{username}}!</h2>
+    <p>Gracias por iniciar sesión</p>
+  </div>
+
+  <ion-button expand="block" fill="solid" color="primary" (click)="goToBookPage()">Ir a ver los libros</ion-button>
+
 </ion-content>
