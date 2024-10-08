@@ -1,12 +1,9 @@
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-} from '@angular/animations';
 import { Component } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { NavController, LoadingController, AlertController } from '@ionic/angular';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { trigger, state, style, animate, transition } from '@angular/animations';
+
 
 @Component({
   selector: 'app-login',
@@ -24,30 +21,61 @@ import { NavController } from '@ionic/angular';
     ])
   ]
 })
+
 export class LoginPage {
   username: string = '';
   password: string = '';
   buttonState: string = 'normal';
+  loginForm: FormGroup;
 
-  constructor(private navCtrl: NavController) {}
+  constructor(
+    private navCtrl: NavController,
+    private authService: AuthService,
+    private loadingController: LoadingController,
+    private alertController: AlertController,
+    private formBuilder: FormBuilder
+  ) {
+    // Inicializar el formulario con validaciones
+    this.loginForm = this.formBuilder.group({
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+    });
+  }
 
-  // Este evento se ejecuta cada vez que entras a la página
   ionViewWillEnter() {
     this.clearFields();
   }
 
-  // Función para limpiar los campos
   clearFields() {
     this.username = '';
     this.password = '';
   }
 
-  login() {
-    if (this.username && this.password) {
-      // Guardar el nombre de usuario en el almacenamiento local
-      localStorage.setItem('username', this.username);
-      this.navCtrl.navigateForward('/home');
+  async login() {
+    if (this.loginForm.invalid) {
+      this.presentAlert('Error', 'Por favor, completa todos los campos correctamente.');
+      return;
     }
+
+    const loading = await this.loadingController.create({
+      message: 'Iniciando sesión...',
+    });
+    await loading.present();
+
+    // Llamar al servicio de autenticación
+    this.authService.login(this.loginForm.value.username, this.loginForm.value.password).subscribe({
+      next: async (response) => {
+        await loading.dismiss();
+        // Suponiendo que el servicio retorna un token
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('username', this.loginForm.value.username);
+        this.navCtrl.navigateForward('/home');
+      },
+      error: async (err) => {
+        await loading.dismiss();
+        this.presentAlert('Error', 'Credenciales incorrectas o servidor no disponible.');
+      }
+    });
   }
 
   goToResetPassword() {
@@ -60,5 +88,15 @@ export class LoginPage {
 
   onButtonRelease() {
     this.buttonState = 'normal';
+  }
+
+  async presentAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK'],
+    });
+
+    await alert.present();
   }
 }
