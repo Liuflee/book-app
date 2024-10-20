@@ -1,3 +1,4 @@
+// home.page.ts
 import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular';
 
@@ -10,12 +11,10 @@ export class HomePage {
   username: string = '';
 
   constructor(private navCtrl: NavController) {
-    // Recuperar el nombre de usuario del almacenamiento local
     this.username = localStorage.getItem('username') || 'Invitado';
   }
 
-  goToBookPage() {
-    this.navCtrl.navigateForward('/books');
+  goToTabs() {
+    this.navCtrl.navigateForward('/tabs');
   }
 }
-  
