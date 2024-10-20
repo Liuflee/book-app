@@ -17,6 +17,10 @@ const routes: Routes = [
         loadChildren: () => import('../lists/lists.module').then(m => m.ListsPageModule)
       },
       {
+        path: 'quotes',
+        loadChildren: () => import('../quotes/quotes.module').then(m => m.QuotesPageModule)
+      },
+      {
         path: '',
         redirectTo: '/tabs/books',
         pathMatch: 'full'
