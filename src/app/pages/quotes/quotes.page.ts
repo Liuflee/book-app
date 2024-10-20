@@ -13,6 +13,7 @@ export class QuotesPage {
 
   extractedText: string = '';  // Donde se mostrará el texto extraído
   quotes: any[] = [];  // Guardar las citas obtenidas de Firestore
+  isEditingExtractedText: boolean = false;  // Indica si el texto extraído está siendo editado
 
   constructor(private alertCtrl: AlertController, private quoteService: QuoteService) {}
 
@@ -26,7 +27,6 @@ export class QuotesPage {
 
     const base64Image = image.base64String;
 
-    // Pasar la imagen al reconocimiento de texto (OCR)
     if (base64Image) {
       this.extractTextFromImage(base64Image);
     } else {
@@ -35,19 +35,17 @@ export class QuotesPage {
   }
 
   async extractTextFromImage(base64Image: string) {
-    // Aquí se ejecuta el OCR con Tesseract.js
     const text = await this.runOCR(base64Image);
     this.extractedText = text;
   }
 
   async runOCR(base64Image: string): Promise<string> {
     try {
-      // Llamada a Tesseract.js para realizar OCR
       const result = await Tesseract.recognize(
         `data:image/jpeg;base64,${base64Image}`,  // La imagen base64 en formato JPEG
-        'spa',  // Idioma del OCR (puedes cambiarlo si es necesario)
+        'spa',  // Idioma del OCR
         {
-          logger: info => console.log(info),  // Opción para ver el progreso del reconocimiento
+          logger: info => console.log(info),  // Progreso del OCR
         }
       );
       return result.data.text;  // Devuelve el texto extraído
@@ -57,29 +55,62 @@ export class QuotesPage {
     }
   }
 
-  async saveQuote() {
+  async saveQuote(quoteText: string) {
+    if (quoteText) {
+      await this.quoteService.addQuote(quoteText);  // Guardar en Firestore
+      this.updateQuotesList();
+      this.extractedText = '';  // Limpiar el texto extraído
+    }
+  }
+
+  async deleteQuote(quoteId: string) {
+    await this.quoteService.deleteQuote(quoteId);  // Eliminar cita de Firestore
+    this.updateQuotesList();
+  }
+
+  updateQuotesList() {
+    this.quoteService.getQuotes().then((quotes) => {
+      this.quotes = quotes.map(q => ({...q, isEditing: false}));  // Añadir el campo isEditing
+    }).catch((error) => {
+      console.error('Error al actualizar las citas: ', error);
+    });
+  }
+
+  async ngOnInit() {
+    this.updateQuotesList();
+  }
+
+  toggleEditQuote(quote: any) {
+    quote.isEditing = !quote.isEditing;  // Alternar el modo de edición
+  }
+
+  async updateQuote(quote: any) {
+    if (quote.text) {
+      await this.quoteService.updateQuote(quote.id, quote.text);  // Actualizar la cita en Firestore
+      quote.isEditing = false;  // Salir del modo de edición
+    }
+  }
+
+  // En quotes.page.ts
+  async confirmDeleteQuote(quoteId: string) {
     const alert = await this.alertCtrl.create({
-      header: 'Guardar cita',
-      inputs: [
-        {
-          name: 'quote',
-          type: 'textarea',
-          value: this.extractedText,
-          placeholder: 'Edita la cita extraída si es necesario'
-        }
-      ],
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro de que deseas eliminar esta cita?',
       buttons: [
         {
           text: 'Cancelar',
-          role: 'cancel'
+          role: 'cancel',
+          handler: () => {
+            // Si el usuario presiona "Cancelar", no hacemos nada
+            console.log('Eliminación cancelada');
+          }
         },
         {
-          text: 'Guardar',
-          handler: async (data) => {
-            if (data.quote) {
-              await this.quoteService.addQuote(data.quote);  // Guardar la cita en Firestore
-              this.quotes.push(data.quote);  // Añadirla a la lista localmente
-            }
+          text: 'Eliminar',
+          handler: async () => {
+            // Si el usuario confirma la eliminación, llamamos al servicio para eliminar la cita
+            await this.quoteService.deleteQuote(quoteId);
+            this.updateQuotesList();  // Actualiza la lista de citas
           }
         }
       ]
@@ -88,7 +119,4 @@ export class QuotesPage {
     await alert.present();
   }
 
-  async ngOnInit() {
-    this.quotes = await this.quoteService.getQuotes();  // Obtener las citas guardadas
-  }
 }
