@@ -18,7 +18,9 @@ export class BooksPage implements OnInit {
 
   ngOnInit() {
     this.loadBooks();
-    this.lists = this.listService.getLists();  // Cargar listas de libros
+    this.listService.getLists().then(lists => {
+      this.lists = lists;  // Cargar listas de libros
+    });
   }
 
   loadBooks(query: string = '') {
@@ -31,7 +33,6 @@ export class BooksPage implements OnInit {
     const query = event.target.value.toLowerCase();
     this.loadBooks(query);
   }
-
   async addBookToList(book: any) {
     const alert = await this.alertCtrl.create({
       header: 'Añadir a lista',
@@ -47,15 +48,16 @@ export class BooksPage implements OnInit {
         },
         {
           text: 'Añadir',
-          handler: (listId) => {
+          handler: async (listId) => {
             if (listId) {
-              this.listService.addBookToList(listId, book);
+              await this.listService.addBookToList(listId, book);
             }
           }
         }
       ]
     });
-
+  
     await alert.present();
   }
+  
 }

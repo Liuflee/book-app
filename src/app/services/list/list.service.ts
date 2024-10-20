@@ -1,36 +1,42 @@
-// list.service.ts
 import { Injectable } from '@angular/core';
+import { Firestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, arrayUnion } from '@angular/fire/firestore';
+import { List } from '../../models/list.model';  // Asegúrate de definir el modelo List
 
 @Injectable({
   providedIn: 'root',
 })
 export class ListService {
-  private lists: any[] = [];
+  private listsCollection;
 
-  constructor() {}
+  constructor(private firestore: Firestore) {
+    this.listsCollection = collection(this.firestore, 'lists');
+  }
 
   // Obtener todas las listas
-  getLists() {
-    return this.lists;
+  async getLists() {
+    const listSnapshot = await getDocs(this.listsCollection);
+    return listSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   }
 
   // Crear una nueva lista
-  createList(name: string) {
-    const newList = { id: Date.now(), name, books: [] };
-    this.lists.push(newList);
-    return newList;
+  async createList(name: string) {
+    const newList: List = { name, books: [] };
+    const docRef = await addDoc(this.listsCollection, newList);
+    return { id: docRef.id, ...newList };
   }
 
   // Agregar libro a una lista
-  addBookToList(listId: number, book: any) {
-    const list = this.lists.find(l => l.id === listId);
-    if (list) {
-      list.books.push(book);
-    }
+  async addBookToList(listId: string, book: any) {
+    const listRef = doc(this.firestore, 'lists', listId);
+    // Actualizar el libro en la lista
+    await updateDoc(listRef, {
+      books: arrayUnion(book)  // Usa arrayUnion para evitar duplicados
+    });
   }
 
   // Eliminar lista
-  deleteList(listId: number) {
-    this.lists = this.lists.filter(l => l.id !== listId);
+  async deleteList(listId: string) {
+    const listRef = doc(this.firestore, 'lists', listId);
+    await deleteDoc(listRef);
   }
 }

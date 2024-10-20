@@ -1,4 +1,3 @@
-// lists.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ListService } from '../../services/list/list.service';
 import { AlertController } from '@ionic/angular';
@@ -14,8 +13,8 @@ export class ListsPage implements OnInit {
 
   constructor(private listService: ListService, private alertCtrl: AlertController) { }
 
-  ngOnInit() {
-    this.lists = this.listService.getLists();
+  async ngOnInit() {
+    this.lists = await this.listService.getLists();  // Esperar a que se obtengan las listas
   }
 
   async createList() {
@@ -35,9 +34,10 @@ export class ListsPage implements OnInit {
         },
         {
           text: 'Crear',
-          handler: (data) => {
+          handler: async (data) => {
             if (data.name) {
-              this.listService.createList(data.name);
+              const newList = await this.listService.createList(data.name);
+              this.lists.push(newList);  // Agregar la nueva lista al estado local
             }
           }
         }
@@ -47,7 +47,8 @@ export class ListsPage implements OnInit {
     await alert.present();
   }
 
-  deleteList(listId: number) {
-    this.listService.deleteList(listId);
+  async deleteList(listId: string) {
+    await this.listService.deleteList(listId);
+    this.lists = this.lists.filter(l => l.id !== listId);  // Eliminar localmente
   }
 }
