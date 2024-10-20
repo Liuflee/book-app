@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BookService } from '../../services/book.service';
+import { ListService } from '../../services/list/list.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-books',
@@ -10,33 +12,52 @@ export class BooksPage implements OnInit {
 
   books: any[] = [];
   searchTerm: string = '';
+  lists: any[] = [];
 
-  constructor(private bookService: BookService) { }
+  constructor(private bookService: BookService, private listService: ListService, private alertCtrl: AlertController) { }
 
   ngOnInit() {
-    // Cargar libros populares al iniciar la página
     this.loadBooks();
+    this.listService.getLists().then(lists => {
+      this.lists = lists;  // Cargar listas de libros
+    });
   }
 
   loadBooks(query: string = '') {
-    // Si hay un término de búsqueda, ajusta la URL de la API
-    let apiUrl = this.bookService.apiUrl;
-    if (query) {
-      apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&orderBy=relevance&maxResults=10`;
-    }
-
-    // Realiza la solicitud a la API
-    this.bookService.getBooks(apiUrl).subscribe((data: any) => {
-      this.books = data.items;
+    this.bookService.getBooks(query).subscribe((data: any) => {
+      this.books = data.docs;
     });
   }
 
   searchBooks(event: any) {
     const query = event.target.value.toLowerCase();
-    if (query && query.trim() !== '') {
-      this.loadBooks(query);
-    } else {
-      this.loadBooks();  // Si no hay búsqueda, carga los libros populares
-    }
+    this.loadBooks(query);
   }
+  async addBookToList(book: any) {
+    const alert = await this.alertCtrl.create({
+      header: 'Añadir a lista',
+      inputs: this.lists.map(list => ({
+        type: 'radio',
+        label: list.name,
+        value: list.id
+      })),
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Añadir',
+          handler: async (listId) => {
+            if (listId) {
+              await this.listService.addBookToList(listId, book);
+            }
+          }
+        }
+      ]
+    });
+  
+    await alert.present();
+  }
+  
 }

@@ -1,12 +1,7 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-    <ion-title>Libritos</ion-title>
-  </ion-toolbar>
-  <ion-toolbar>
-    <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="searchBooks($event) " placeholder="Buscar" animated="true"></ion-searchbar>
+    <ion-title>Libros</ion-title>
+    <ion-searchbar placeholder="Buscar por título o autor" (ionInput)="searchBooks($event)"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
@@ -14,13 +9,24 @@
   <ion-list>
     <ion-item *ngFor="let book of books">
       <ion-thumbnail slot="start">
-        <img [src]="book.volumeInfo.imageLinks?.thumbnail" alt="Book Thumbnail">
+        <img *ngIf="book.cover_i" [src]="'https://covers.openlibrary.org/b/id/' + book.cover_i + '-M.jpg'" alt="Cover" />
       </ion-thumbnail>
       <ion-label>
-        <h2>{{ book.volumeInfo.title }}</h2>
-        <p>{{ book.volumeInfo.authors?.join(', ') }}</p>
-        <p>{{ book.volumeInfo.publishedDate }}</p>
+        <h2>{{ book.title }}</h2>
+        <h3 *ngIf="book.author_name">Por {{ book.author_name.join(', ') }}</h3>
+        <p *ngIf="book.first_publish_year">Publicado en {{ book.first_publish_year }}</p>
       </ion-label>
+      <ion-buttons slot="end">
+        <!-- Botón para agregar a lista -->
+        <ion-button fill="clear" color="success" (click)="addBookToList(book)">
+          <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-item>
   </ion-list>
+
+  <!-- Si no hay libros para mostrar -->
+  <ion-text *ngIf="!books.length" color="medium">
+    <p class="ion-padding">No se encontraron libros. Prueba otra búsqueda.</p>
+  </ion-text>
 </ion-content>
