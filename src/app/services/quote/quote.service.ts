@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, addDoc, getDocs, deleteDoc, doc } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -31,4 +31,8 @@ export class QuoteService {
   }
 
   // Puedes agregar métodos adicionales, como editar citas, etc.
+  async updateQuote(id: string, updatedText: string) {
+    const quoteDoc = doc(this.firestore, 'quotes', id);
+    return await updateDoc(quoteDoc, { text: updatedText });
+  }
 }
