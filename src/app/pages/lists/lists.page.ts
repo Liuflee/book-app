@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ListService } from '../../services/list/list.service';
 import { AlertController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-lists',
@@ -11,7 +12,7 @@ export class ListsPage implements OnInit {
 
   lists: any[] = [];
 
-  constructor(private listService: ListService, private alertCtrl: AlertController) { }
+  constructor(private listService: ListService, private alertCtrl: AlertController, private router: Router) { }
 
   async ngOnInit() {
     this.lists = await this.listService.getLists();  // Esperar a que se obtengan las listas
@@ -47,8 +48,33 @@ export class ListsPage implements OnInit {
     await alert.present();
   }
 
+  openListDetails(listId: string) {
+    this.router.navigate(['/list-details', listId]);  // Navegar a la página de detalles de la lista
+  }
+
   async deleteList(listId: string) {
-    await this.listService.deleteList(listId);
-    this.lists = this.lists.filter(l => l.id !== listId);  // Eliminar localmente
+    const alert = await this.alertCtrl.create({
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro de que deseas eliminar esta lista?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Eliminación cancelada');
+          }
+        },
+        {
+          text: 'Eliminar',
+          handler: async () => {
+            await this.listService.deleteList(listId);
+            this.lists = this.lists.filter(l => l.id !== listId);  // Eliminar localmente
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 }

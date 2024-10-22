@@ -34,9 +34,14 @@ const routes: Routes = [
   {
     path: 'lists',
     loadChildren: () => import('./pages/lists/lists.module').then( m => m.ListsPageModule)
-  },  {
+  },
+  {
     path: 'quotes',
     loadChildren: () => import('./pages/quotes/quotes.module').then( m => m.QuotesPageModule)
+  },
+  {
+    path: 'list-details/:listId',
+    loadChildren: () => import('./pages/list-details/list-details.module').then( m => m.ListDetailsPageModule)
   },
 
 

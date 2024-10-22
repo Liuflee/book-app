@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ list.name }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="renameList()"> <!-- Botón para renombrar la lista -->
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+      <ion-button (click)="goBack()"> <!-- Botón para volver atrás -->
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="list">
+  <ion-list>
+    <ion-item *ngFor="let book of list.books">
+      <ion-thumbnail slot="start">
+        <img [src]="book.imageUrl" alt="Cover image">
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ book.title }}</h2>
+        <p>{{ book.author }}</p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button color="danger" fill="clear" (click)="confirmRemoveBook(book)"> <!-- Llama a la función de confirmación -->
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+</ion-content>
