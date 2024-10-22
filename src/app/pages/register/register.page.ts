@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { AuthService } from '../../services/auth/auth.service'; // Asegúrate de que la ruta sea correcta
+import { AuthService } from '../../services/auth/auth.service'; 
 
 @Component({
   selector: 'app-register',

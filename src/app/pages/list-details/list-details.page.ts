@@ -11,13 +11,13 @@ import { Book } from '../../models/book.model';
 })
 export class ListDetailsPage implements OnInit {
   listId: string | undefined;
-  list: { name: string, books: Book[] } = { name: '', books: [] }; // Inicializar con una lista vacía
+  list: { name: string, books: Book[] } = { name: '', books: [] }; 
 
   constructor(private route: ActivatedRoute, private listService: ListService, private alertCtrl: AlertController, private router: Router) { }
 
   async ngOnInit() {
-    this.listId = this.route.snapshot.paramMap.get('listId')!; // Obtener el ID de la lista desde la URL
-    const list = await this.listService.getListById(this.listId); // Obtener la lista
+    this.listId = this.route.snapshot.paramMap.get('listId')!; 
+    const list = await this.listService.getListById(this.listId); 
     if (list) {
       this.list = list;
     }
@@ -35,7 +35,7 @@ export class ListDetailsPage implements OnInit {
         {
           text: 'Eliminar',
           handler: async () => {
-            await this.removeBook(book); // Llama a la función para eliminar el libro
+            await this.removeBook(book); 
           }
         }
       ]
@@ -46,13 +46,13 @@ export class ListDetailsPage implements OnInit {
 
   async removeBook(book: Book) {
     if (this.listId) {
-      await this.listService.removeBookFromList(this.listId, book); // Llamar al servicio para eliminar el libro
+      await this.listService.removeBookFromList(this.listId, book); 
     }
-    this.list.books = this.list.books.filter(b => b.id !== book.id); // Actualizar la lista localmente
+    this.list.books = this.list.books.filter(b => b.id !== book.id); 
   }
 
   goBack() {
-    this.router.navigate(['/tabs/lists']); // Navegar a la página anterior (o donde desees)
+    this.router.navigate(['/tabs/lists']); 
   } 
 
   async renameList() {
@@ -62,7 +62,7 @@ export class ListDetailsPage implements OnInit {
         {
           name: 'newName',
           type: 'text',
-          value: this.list.name, // Valor actual de la lista
+          value: this.list.name, 
           placeholder: 'Nuevo nombre de la lista'
         }
       ],
@@ -76,9 +76,9 @@ export class ListDetailsPage implements OnInit {
           handler: async (data) => {
             if (data.newName) {
               if (this.listId) {
-                await this.listService.renameList(this.listId, data.newName); // Renombrar la lista en el servicio
+                await this.listService.renameList(this.listId, data.newName);
               }
-              this.list.name = data.newName; // Actualizar el nombre localmente
+              this.list.name = data.newName; 
             }
           }
         }

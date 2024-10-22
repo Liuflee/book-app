@@ -2,10 +2,10 @@
   <ion-toolbar>
     <ion-title>{{ list.name }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="renameList()"> <!-- Botón para renombrar la lista -->
+      <ion-button (click)="renameList()"> 
         <ion-icon name="create"></ion-icon>
       </ion-button>
-      <ion-button (click)="goBack()"> <!-- Botón para volver atrás -->
+      <ion-button (click)="goBack()"> 
         <ion-icon name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -23,7 +23,7 @@
         <p>{{ book.author }}</p>
       </ion-label>
       <ion-buttons slot="end">
-        <ion-button color="danger" fill="clear" (click)="confirmRemoveBook(book)"> <!-- Llama a la función de confirmación -->
+        <ion-button color="danger" fill="clear" (click)="confirmRemoveBook(book)"> 
           <ion-icon slot="icon-only" name="trash"></ion-icon>
         </ion-button>
       </ion-buttons>

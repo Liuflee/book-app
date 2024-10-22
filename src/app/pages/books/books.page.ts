@@ -23,7 +23,7 @@ export class BooksPage implements OnInit {
   ngOnInit() {
     const defaultQuery = 'programming';
     this.loadBooks(defaultQuery);
-    this.loadLists(); // Cargar listas de libros al inicio
+    this.loadLists(); 
   }
 
   async loadLists() {
@@ -73,9 +73,9 @@ export class BooksPage implements OnInit {
           handler: async (selectedValue) => {
             if (selectedValue) {
               if (selectedValue === 'createNew') {
-                await this.promptCreateNewList(book); // Ofrecer crear una nueva lista
+                await this.promptCreateNewList(book); 
               } else {
-                await this.listService.addBookToList(selectedValue, book); // Añadir el libro a la lista seleccionada
+                await this.listService.addBookToList(selectedValue, book); 
               }
             }
           }
@@ -105,12 +105,12 @@ export class BooksPage implements OnInit {
           text: 'Crear',
           handler: async (data) => {
             if (data.listName && data.listName.trim() !== '') {
-              const newList = await this.listService.createList(data.listName); // Crear la lista
-              this.lists.push(newList); // Agregar la nueva lista a la lista local
+              const newList = await this.listService.createList(data.listName); 
+              this.lists.push(newList); 
               if (newList.id) {
-                await this.listService.addBookToList(newList.id, book); // Añadir el libro a la nueva lista
+                await this.listService.addBookToList(newList.id, book);
               } else {
-                // Handle the case where newList.id is undefined
+                
                 this.alertCtrl.create({
                   header: 'Error',
                   message: 'No se pudo crear la lista. Inténtalo de nuevo.',
@@ -118,7 +118,7 @@ export class BooksPage implements OnInit {
                 }).then(alert => alert.present());
               }
             } else {
-              // Si el nombre de la lista está vacío, mostrar un mensaje de error
+              
               this.alertCtrl.create({
                 header: 'Error',
                 message: 'El nombre de la lista no puede estar vacío.',

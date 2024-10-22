@@ -46,13 +46,10 @@ export class LoginPage {
   async login() {
     if (this.username && this.password) {
       try {
-        // Usa AuthService para iniciar sesión
         await this.authService.login(this.username, this.password);
-        // Si el inicio de sesión es exitoso, redirige a la página principal
         this.navCtrl.navigateForward('/home');
       } catch (error) {
         console.error('Error al iniciar sesión:', error);
-        // Aquí puedes manejar el error y mostrar un mensaje al usuario si lo deseas
       }
     }
   }

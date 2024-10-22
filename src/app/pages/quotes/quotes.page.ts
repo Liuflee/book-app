@@ -11,9 +11,9 @@ import * as Tesseract from 'tesseract.js';  // Importa Tesseract.js
 })
 export class QuotesPage {
 
-  extractedText: string = '';  // Donde se mostrará el texto extraído
-  quotes: any[] = [];  // Guardar las citas obtenidas de Firestore
-  isEditingExtractedText: boolean = false;  // Indica si el texto extraído está siendo editado
+  extractedText: string = '';  
+  quotes: any[] = [];  
+  isEditingExtractedText: boolean = false;  // indica si el texto extraído está siendo editado
 
   constructor(private alertCtrl: AlertController, private quoteService: QuoteService) {}
 
@@ -42,13 +42,13 @@ export class QuotesPage {
   async runOCR(base64Image: string): Promise<string> {
     try {
       const result = await Tesseract.recognize(
-        `data:image/jpeg;base64,${base64Image}`,  // La imagen base64 en formato JPEG
+        `data:image/jpeg;base64,${base64Image}`,  
         'spa',  // Idioma del OCR
         {
-          logger: info => console.log(info),  // Progreso del OCR
+          logger: info => console.log(info), 
         }
       );
-      return result.data.text;  // Devuelve el texto extraído
+      return result.data.text;  
     } catch (error) {
       console.error('OCR error: ', error);
       return 'Error al extraer texto';
@@ -59,7 +59,7 @@ export class QuotesPage {
     if (quoteText) {
       await this.quoteService.addQuote(quoteText);  // Guardar en Firestore
       this.updateQuotesList();
-      this.extractedText = '';  // Limpiar el texto extraído
+      this.extractedText = '';  // Limpiar el texto
     }
   }
 
@@ -91,7 +91,7 @@ export class QuotesPage {
     }
   }
 
-  // En quotes.page.ts
+  // Método para confirmar la eliminación de una cita
   async confirmDeleteQuote(quoteId: string) {
     const alert = await this.alertCtrl.create({
       header: 'Confirmar eliminación',
@@ -101,16 +101,15 @@ export class QuotesPage {
           text: 'Cancelar',
           role: 'cancel',
           handler: () => {
-            // Si el usuario presiona "Cancelar", no hacemos nada
+            
             console.log('Eliminación cancelada');
           }
         },
         {
           text: 'Eliminar',
           handler: async () => {
-            // Si el usuario confirma la eliminación, llamamos al servicio para eliminar la cita
             await this.quoteService.deleteQuote(quoteId);
-            this.updateQuotesList();  // Actualiza la lista de citas
+            this.updateQuotesList(); 
           }
         }
       ]

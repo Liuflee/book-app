@@ -2,6 +2,9 @@
   <ion-toolbar>
     <ion-title>Mis Listas</ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="refreshLists()">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-button>
       <ion-button (click)="createList()">
         <ion-icon name="add-circle"></ion-icon>
       </ion-button>
