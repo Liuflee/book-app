@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Inicio de sesión</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="image-container">
+    <img src="assets/images/milly-silly-cat.gif" alt="Avatar" class="login-image">
+  </div>
+  <form (ngSubmit)="login()">
+    <ion-item>
+      <ion-label position="floating">Usuario</ion-label>
+      <ion-input type="text" [(ngModel)]="username" name="username" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" type="submit" [@buttonState]="buttonState" 
+                (mousedown)="onButtonPress()" (mouseup)="onButtonRelease()">
+      Iniciar Sesión
+    </ion-button>
+  </form>
+
+  <ion-button expand="block" fill="clear" (click)="goToRegister()">¿No tienes cuenta? Regístrate</ion-button>
+  <ion-button expand="block" fill="clear" (click)="goToResetPassword()">¿Olvidaste tu contraseña?</ion-button>
+</ion-content>
