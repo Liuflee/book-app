@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { BookService } from '../../services/book.service';
 import { ListService } from '../../services/list/list.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, AlertInput } from '@ionic/angular';
+import { Book } from '../../models/book.model';
 
 @Component({
   selector: 'app-books',
@@ -9,38 +10,59 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./books.page.scss'],
 })
 export class BooksPage implements OnInit {
-
-  books: any[] = [];
+  books: Book[] = [];
   searchTerm: string = '';
   lists: any[] = [];
 
-  constructor(private bookService: BookService, private listService: ListService, private alertCtrl: AlertController) { }
+  constructor(
+    private bookService: BookService,
+    private listService: ListService,
+    private alertCtrl: AlertController
+  ) {}
 
   ngOnInit() {
-    this.loadBooks();
-    this.listService.getLists().then(lists => {
-      this.lists = lists;  // Cargar listas de libros
-    });
+    const defaultQuery = 'programming';
+    this.loadBooks(defaultQuery);
+    this.loadLists(); 
+  }
+
+  async loadLists() {
+    this.lists = await this.listService.getLists();
   }
 
   loadBooks(query: string = '') {
     this.bookService.getBooks(query).subscribe((data: any) => {
-      this.books = data.docs;
+      this.books = data.items.map((item: any) => ({
+        id: item.id,
+        title: item.volumeInfo.title,
+        author: item.volumeInfo.authors ? item.volumeInfo.authors.join(', ') : 'Desconocido',
+        imageUrl: item.volumeInfo.imageLinks?.thumbnail || '',
+        description: item.volumeInfo.description || ''
+      })) || [];
     });
   }
-
+  
   searchBooks(event: any) {
     const query = event.target.value.toLowerCase();
     this.loadBooks(query);
   }
-  async addBookToList(book: any) {
+
+  async addBookToList(book: Book) {
+    const inputs: AlertInput[] = this.lists.map(list => ({
+      type: 'radio' as const,
+      label: list.name,
+      value: list.id
+    }));
+
+    inputs.push({
+      type: 'radio' as const,
+      label: 'Crear nueva lista',
+      value: 'createNew'
+    });
+
     const alert = await this.alertCtrl.create({
       header: 'Añadir a lista',
-      inputs: this.lists.map(list => ({
-        type: 'radio',
-        label: list.name,
-        value: list.id
-      })),
+      inputs: inputs,
       buttons: [
         {
           text: 'Cancelar',
@@ -48,16 +70,66 @@ export class BooksPage implements OnInit {
         },
         {
           text: 'Añadir',
-          handler: async (listId) => {
-            if (listId) {
-              await this.listService.addBookToList(listId, book);
+          handler: async (selectedValue) => {
+            if (selectedValue) {
+              if (selectedValue === 'createNew') {
+                await this.promptCreateNewList(book); 
+              } else {
+                await this.listService.addBookToList(selectedValue, book); 
+              }
             }
           }
         }
       ]
     });
-  
+
     await alert.present();
   }
-  
+
+  async promptCreateNewList(book: Book) {
+    const alert = await this.alertCtrl.create({
+      header: 'Crear nueva lista',
+      inputs: [
+        {
+          name: 'listName',
+          type: 'text',
+          placeholder: 'Nombre de la lista'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Crear',
+          handler: async (data) => {
+            if (data.listName && data.listName.trim() !== '') {
+              const newList = await this.listService.createList(data.listName); 
+              this.lists.push(newList); 
+              if (newList.id) {
+                await this.listService.addBookToList(newList.id, book);
+              } else {
+                
+                this.alertCtrl.create({
+                  header: 'Error',
+                  message: 'No se pudo crear la lista. Inténtalo de nuevo.',
+                  buttons: ['Aceptar']
+                }).then(alert => alert.present());
+              }
+            } else {
+              
+              this.alertCtrl.create({
+                header: 'Error',
+                message: 'El nombre de la lista no puede estar vacío.',
+                buttons: ['Aceptar']
+              }).then(alert => alert.present());
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
 }

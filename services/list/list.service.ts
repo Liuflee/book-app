@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, arrayUnion } from '@angular/fire/firestore';
-import { List } from '../../models/list.model';  // Asegúrate de definir el modelo List
+import { List } from '../../models/list.model';  
 
 @Injectable({
   providedIn: 'root',
@@ -25,12 +25,10 @@ export class ListService {
     return { id: docRef.id, ...newList };
   }
 
-  // Agregar libro a una lista
   async addBookToList(listId: string, book: any) {
     const listRef = doc(this.firestore, 'lists', listId);
-    // Actualizar el libro en la lista
     await updateDoc(listRef, {
-      books: arrayUnion(book)  // Usa arrayUnion para evitar duplicados
+      books: arrayUnion(book) 
     });
   }
 

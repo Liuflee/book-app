@@ -1,0 +1,24 @@
+/* src/app/pages/books/books.page.scss */
+.book-title {
+    font-size: 1.2rem; /* Tamaño de fuente para el título */
+    margin: 0; /* Sin margen */
+  }
+  
+  .book-author {
+    font-size: 0.9rem; /* Tamaño de fuente para el autor */
+    color: #555; /* Color gris para el autor */
+    margin: 0; /* Sin margen */
+  }
+  
+  .book-description {
+    font-size: 0.8rem; /* Tamaño de fuente más pequeño para la descripción */
+    color: #777; /* Color gris claro para la descripción */
+    margin: 0; /* Sin margen */
+    max-height: 40px; /* Limitar la altura máxima de la descripción */
+    overflow: hidden; /* Ocultar el desbordamiento */
+    display: -webkit-box; /* Para soportar múltiples líneas truncadas */
+    -webkit-line-clamp: 2; /* Número máximo de líneas a mostrar */
+    -webkit-box-orient: vertical; /* Orientación vertical */
+    text-overflow: ellipsis; /* Agregar puntos suspensivos (...) al final */
+  }
+  

@@ -1,8 +1,10 @@
-<!-- lists.page.html -->
 <ion-header>
   <ion-toolbar>
     <ion-title>Mis Listas</ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="refreshLists()">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-button>
       <ion-button (click)="createList()">
         <ion-icon name="add-circle"></ion-icon>
       </ion-button>
@@ -12,12 +14,12 @@
 
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let list of lists">
+    <ion-item *ngFor="let list of lists" button (click)="openListDetails(list.id)">
       <ion-label>
         <h2>{{ list.name }}</h2>
       </ion-label>
       <ion-buttons slot="end">
-        <ion-button color="danger" fill="clear" (click)="deleteList(list.id)">
+        <ion-button color="danger" fill="clear" (click)="deleteList(list.id); $event.stopPropagation()">
           <ion-icon slot="icon-only" name="trash"></ion-icon>
         </ion-button>
       </ion-buttons>
