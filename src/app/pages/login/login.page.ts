@@ -1,3 +1,5 @@
+
+
 import {
   trigger,
   state,
@@ -6,8 +8,8 @@ import {
   transition,
 } from '@angular/animations';
 import { Component } from '@angular/core';
-import { NavController } from '@ionic/angular';
-import { AuthService } from '../../services/auth/auth.service'; // Ajusta la ruta según sea necesario
+import { NavController, AlertController } from '@ionic/angular';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -30,14 +32,18 @@ export class LoginPage {
   password: string = '';
   buttonState: string = 'normal';
 
-  constructor(private navCtrl: NavController, private authService: AuthService) {}
+  constructor(
+    private navCtrl: NavController,
+    private authService: AuthService,
+    private alertController: AlertController 
+  ) {}
 
-  // Este evento se ejecuta cada vez que entras a la página
+
   ionViewWillEnter() {
     this.clearFields();
   }
 
-  // Función para limpiar los campos
+
   clearFields() {
     this.username = '';
     this.password = '';
@@ -46,12 +52,28 @@ export class LoginPage {
   async login() {
     if (this.username && this.password) {
       try {
+
         await this.authService.login(this.username, this.password);
+
         this.navCtrl.navigateForward('/home');
       } catch (error) {
-        console.error('Error al iniciar sesión:', error);
+        console.error('Login error:', error);
+
+        this.showAlert('Login invalido', 'El email o contraseña no son validos. Intenta denuevo.');
       }
+    } else {
+
+      this.showAlert('Falta información', 'Complete los campos para seguir.');
     }
+  }
+
+  async showAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   goToResetPassword() {
@@ -61,7 +83,7 @@ export class LoginPage {
   goToRegister() {
     this.navCtrl.navigateForward('/register');
   }
-  
+
   onButtonPress() {
     this.buttonState = 'pressed';
   }
