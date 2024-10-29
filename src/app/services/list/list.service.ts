@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, arrayUnion, getDoc, arrayRemove } from '@angular/fire/firestore';
-import { List } from '../../models/list.model';  // Actualizado para apuntar al modelo correcto
-import { Book } from '../../models/book.model';  // Importar el modelo de libro
+import { List } from '../../models/list.model';  
+import { Book } from '../../models/book.model';  
 
 @Injectable({
   providedIn: 'root',

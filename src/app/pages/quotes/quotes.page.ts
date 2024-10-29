@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { AlertController } from '@ionic/angular';
 import { QuoteService } from '../../services/quote/quote.service';  
-import * as Tesseract from 'tesseract.js';  // Importa Tesseract.js
+import * as Tesseract from 'tesseract.js';  
 
 @Component({
   selector: 'app-quotes',
@@ -13,7 +13,7 @@ export class QuotesPage {
 
   extractedText: string = '';  
   quotes: any[] = [];  
-  isEditingExtractedText: boolean = false;  // indica si el texto extraído está siendo editado
+  isEditingExtractedText: boolean = false;  
 
   constructor(private alertCtrl: AlertController, private quoteService: QuoteService) {}
 
@@ -57,20 +57,20 @@ export class QuotesPage {
 
   async saveQuote(quoteText: string) {
     if (quoteText) {
-      await this.quoteService.addQuote(quoteText);  // Guardar en Firestore
+      await this.quoteService.addQuote(quoteText);  
       this.updateQuotesList();
-      this.extractedText = '';  // Limpiar el texto
+      this.extractedText = ''; 
     }
   }
 
   async deleteQuote(quoteId: string) {
-    await this.quoteService.deleteQuote(quoteId);  // Eliminar cita de Firestore
+    await this.quoteService.deleteQuote(quoteId); 
     this.updateQuotesList();
   }
 
   updateQuotesList() {
     this.quoteService.getQuotes().then((quotes) => {
-      this.quotes = quotes.map(q => ({...q, isEditing: false}));  // Añadir el campo isEditing
+      this.quotes = quotes.map(q => ({...q, isEditing: false}));  
     }).catch((error) => {
       console.error('Error al actualizar las citas: ', error);
     });
@@ -81,17 +81,16 @@ export class QuotesPage {
   }
 
   toggleEditQuote(quote: any) {
-    quote.isEditing = !quote.isEditing;  // Alternar el modo de edición
+    quote.isEditing = !quote.isEditing;  
   }
 
   async updateQuote(quote: any) {
     if (quote.text) {
-      await this.quoteService.updateQuote(quote.id, quote.text);  // Actualizar la cita en Firestore
-      quote.isEditing = false;  // Salir del modo de edición
+      await this.quoteService.updateQuote(quote.id, quote.text);  
+      quote.isEditing = false;  
     }
   }
 
-  // Método para confirmar la eliminación de una cita
   async confirmDeleteQuote(quoteId: string) {
     const alert = await this.alertCtrl.create({
       header: 'Confirmar eliminación',
