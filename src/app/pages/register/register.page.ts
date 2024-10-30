@@ -1,7 +1,7 @@
-
 import { Component } from '@angular/core';
 import { NavController, ToastController } from '@ionic/angular';
 import { AuthService } from '../../services/auth/auth.service'; 
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-register',
@@ -9,50 +9,57 @@ import { AuthService } from '../../services/auth/auth.service';
   styleUrls: ['./register.page.scss'],
 })
 export class RegisterPage {
-  email: string;
-  password: string;
+  userData: User;     
+  password: string;   
 
   constructor(
     private navCtrl: NavController,
     private authService: AuthService,
     private toastController: ToastController
   ) {
-    this.email = '';
+    this.userData = {
+      email: '',
+      name: '',
+    };
     this.password = '';
   }
 
   async register() {
-
-    if (!this.isValidEmail(this.email)) {
-      await this.showToast("Formato de email no valido.");
+    if (!this.isValidEmail(this.userData.email)) {
+      await this.showToast("Formato de email no válido.");
       return;
     }
 
     if (!this.isValidPassword(this.password)) {
-      await this.showToast("La contraseña debe ser desde 6-20 caracteres, con una mayuscula y un número a lo mínimo.");
+      await this.showToast("La contraseña debe tener de 6 a 20 caracteres, una mayúscula y un número mínimo.");
       return;
     }
 
+    if (!this.userData.name || !this.userData.email || !this.password) {
+      await this.showToast("Por favor completa todos los campos.");
+      return;
+    }
 
     try {
-      await this.authService.register(this.email, this.password);
+      await this.authService.register(this.userData, this.password);
       alert('Registro exitoso. Puedes acceder a tu cuenta.');
       this.navCtrl.navigateBack('/login');
     } catch (error) {
       console.error('Error de registro:', error);
-      await this.showToast('Error al registrarse, intentalo denuevo luego de revisar tus datos.');
+      await this.showToast('Error al registrarse, inténtalo de nuevo luego de revisar tus datos.');
     }
   }
 
   private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
   private isValidPassword(password: string): boolean {
-    const passwordRegex = /^(?=.[A-Z])(?=.\d)[A-Za-z\d]{6,20}$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{6,20}$/;
     return passwordRegex.test(password);
-  }
+}
+
 
   private async showToast(message: string) {
     const toast = await this.toastController.create({

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { AlertController } from '@ionic/angular';
-import { QuoteService } from '../../services/quote/quote.service';  
-import * as Tesseract from 'tesseract.js';  
+import { QuoteService } from '../../services/quote/quote.service';
+import * as Tesseract from 'tesseract.js';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-quotes',
@@ -11,27 +12,54 @@ import * as Tesseract from 'tesseract.js';
 })
 export class QuotesPage {
 
-  extractedText: string = '';  
-  quotes: any[] = [];  
-  isEditingExtractedText: boolean = false;  
+  extractedText: string = '';
+  quotes: any[] = [];
+  isEditingExtractedText: boolean = false;
 
   constructor(private alertCtrl: AlertController, private quoteService: QuoteService) {}
 
-  async captureImage() {
-    const image = await Camera.getPhoto({
-      quality: 90,
-      allowEditing: false,
-      resultType: CameraResultType.Base64,
-      source: CameraSource.Camera
-    });
+  async selectImage() {
+    // Detecta si está en un entorno nativo (Android/iOS) o en el navegador
+    if (Capacitor.isNativePlatform()) {
+      // En dispositivos móviles, muestra el menú de selección nativo
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.Base64,
+        source: CameraSource.Prompt // Muestra el menú de selección nativo
+      });
 
-    const base64Image = image.base64String;
+      const base64Image = image.base64String;
 
-    if (base64Image) {
-      this.extractTextFromImage(base64Image);
+      if (base64Image) {
+        this.extractTextFromImage(base64Image);
+      } else {
+        console.error('Error al seleccionar imagen');
+      }
     } else {
-      console.error('Failed to capture image');
+      // En un navegador, utiliza el input HTML para seleccionar archivos de imagen
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async (event: any) => {
+        const file = event.target.files[0];
+        if (file) {
+          const base64Image = await this.convertFileToBase64(file);
+          this.extractTextFromImage(base64Image);
+        }
+      };
+      input.click();
     }
+  }
+
+  // Convierte un archivo a una cadena en base64
+  private convertFileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve((reader.result as string).split(',')[1]);
+      reader.onerror = error => reject(error);
+    });
   }
 
   async extractTextFromImage(base64Image: string) {
@@ -42,35 +70,35 @@ export class QuotesPage {
   async runOCR(base64Image: string): Promise<string> {
     try {
       const result = await Tesseract.recognize(
-        `data:image/jpeg;base64,${base64Image}`,  
-        'spa',  // Idioma del OCR
+        `data:image/jpeg;base64,${base64Image}`,
+        'spa',  // Idioma para OCR en español
         {
-          logger: info => console.log(info), 
+          logger: info => console.log(info),
         }
       );
-      return result.data.text;  
+      return result.data.text;
     } catch (error) {
-      console.error('OCR error: ', error);
+      console.error('Error de OCR: ', error);
       return 'Error al extraer texto';
     }
   }
 
   async saveQuote(quoteText: string) {
     if (quoteText) {
-      await this.quoteService.addQuote(quoteText);  
+      await this.quoteService.addQuote(quoteText);
       this.updateQuotesList();
       this.extractedText = ''; 
     }
   }
 
   async deleteQuote(quoteId: string) {
-    await this.quoteService.deleteQuote(quoteId); 
+    await this.quoteService.deleteQuote(quoteId);
     this.updateQuotesList();
   }
 
   updateQuotesList() {
     this.quoteService.getQuotes().then((quotes) => {
-      this.quotes = quotes.map(q => ({...q, isEditing: false}));  
+      this.quotes = quotes.map(q => ({...q, isEditing: false}));
     }).catch((error) => {
       console.error('Error al actualizar las citas: ', error);
     });
@@ -81,13 +109,13 @@ export class QuotesPage {
   }
 
   toggleEditQuote(quote: any) {
-    quote.isEditing = !quote.isEditing;  
+    quote.isEditing = !quote.isEditing;
   }
 
   async updateQuote(quote: any) {
     if (quote.text) {
-      await this.quoteService.updateQuote(quote.id, quote.text);  
-      quote.isEditing = false;  
+      await this.quoteService.updateQuote(quote.id, quote.text);
+      quote.isEditing = false;
     }
   }
 
@@ -99,16 +127,13 @@ export class QuotesPage {
         {
           text: 'Cancelar',
           role: 'cancel',
-          handler: () => {
-            
-            console.log('Eliminación cancelada');
-          }
+          handler: () => console.log('Eliminación cancelada')
         },
         {
           text: 'Eliminar',
           handler: async () => {
             await this.quoteService.deleteQuote(quoteId);
-            this.updateQuotesList(); 
+            this.updateQuotesList();
           }
         }
       ]
@@ -116,5 +141,4 @@ export class QuotesPage {
 
     await alert.present();
   }
-
 }

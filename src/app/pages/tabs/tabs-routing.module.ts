@@ -2,23 +2,28 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
+import { AuthGuard } from 'src/app/guards/auth.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: TabsPage,
+    canActivate: [AuthGuard], 
     children: [
       {
         path: 'books',
-        loadChildren: () => import('../books/books.module').then(m => m.BooksPageModule)
+        loadChildren: () => import('../books/books.module').then(m => m.BooksPageModule),
+        canActivate: [AuthGuard] 
       },
       {
         path: 'lists',
-        loadChildren: () => import('../lists/lists.module').then(m => m.ListsPageModule)
+        loadChildren: () => import('../lists/lists.module').then(m => m.ListsPageModule),
+        canActivate: [AuthGuard] 
       },
       {
         path: 'quotes',
-        loadChildren: () => import('../quotes/quotes.module').then(m => m.QuotesPageModule)
+        loadChildren: () => import('../quotes/quotes.module').then(m => m.QuotesPageModule),
+        canActivate: [AuthGuard] 
       },
       {
         path: '',
@@ -28,6 +33,7 @@ const routes: Routes = [
     ]
   }
 ];
+
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
@@ -9,9 +9,15 @@
 
 <ion-content class="ion-padding">
   <form (ngSubmit)="register()">
+    
+    <ion-item>
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-input type="text" [(ngModel)]="userData.name" name="name" required></ion-input>
+    </ion-item>
+
     <ion-item>
       <ion-label position="floating">Correo Electrónico</ion-label>
-      <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
+      <ion-input type="email" [(ngModel)]="userData.email" name="email" required></ion-input>
     </ion-item>
 
     <ion-item>
@@ -19,6 +25,8 @@
       <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
     </ion-item>
 
-    <ion-button expand="block" type="submit">Registrar</ion-button>
+    <ion-button expand="full" type="submit" color="secondary" class="ion-margin-top">Registrar</ion-button>
+
+    
   </form>
 </ion-content>

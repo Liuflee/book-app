@@ -1,6 +1,5 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    
     <ion-title>Citas</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -12,13 +11,12 @@
     </ion-toolbar>
   </ion-header>
 
-  <!-- Botón para capturar imagen -->
-  <div class="ion-padding">
-    <ion-button expand="block" shape="round" fill="solid" color="secondary" (click)="captureImage()">
+  <!-- Botón flotante para capturar o adjuntar imagen -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="selectImage()">
       <ion-icon name="camera-outline"></ion-icon>
-      Capturar Imagen
-    </ion-button>
-  </div>
+    </ion-fab-button>
+  </ion-fab>
 
   <!-- Editar el texto extraído directamente -->
   <div *ngIf="extractedText" class="ion-padding">

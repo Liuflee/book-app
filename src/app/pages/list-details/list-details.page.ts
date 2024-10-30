@@ -9,6 +9,7 @@ import { Book } from '../../models/book.model';
   templateUrl: './list-details.page.html',
   styleUrls: ['./list-details.page.scss'],
 })
+
 export class ListDetailsPage implements OnInit {
   listId: string | undefined;
   list: { name: string, books: Book[] } = { name: '', books: [] }; 

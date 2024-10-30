@@ -55,7 +55,7 @@ export class LoginPage {
 
         await this.authService.login(this.username, this.password);
 
-        this.navCtrl.navigateForward('/home');
+        this.navCtrl.navigateForward('/tabs/books');
       } catch (error) {
         console.error('Login error:', error);
 
