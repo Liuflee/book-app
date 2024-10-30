@@ -19,14 +19,12 @@ export class QuotesPage {
   constructor(private alertCtrl: AlertController, private quoteService: QuoteService) {}
 
   async selectImage() {
-    // Detecta si está en un entorno nativo (Android/iOS) o en el navegador
     if (Capacitor.isNativePlatform()) {
-      // En dispositivos móviles, muestra el menú de selección nativo
       const image = await Camera.getPhoto({
         quality: 90,
         allowEditing: false,
         resultType: CameraResultType.Base64,
-        source: CameraSource.Prompt // Muestra el menú de selección nativo
+        source: CameraSource.Prompt 
       });
 
       const base64Image = image.base64String;
@@ -37,7 +35,6 @@ export class QuotesPage {
         console.error('Error al seleccionar imagen');
       }
     } else {
-      // En un navegador, utiliza el input HTML para seleccionar archivos de imagen
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
@@ -52,7 +49,6 @@ export class QuotesPage {
     }
   }
 
-  // Convierte un archivo a una cadena en base64
   private convertFileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -71,7 +67,7 @@ export class QuotesPage {
     try {
       const result = await Tesseract.recognize(
         `data:image/jpeg;base64,${base64Image}`,
-        'spa',  // Idioma para OCR en español
+        'spa', 
         {
           logger: info => console.log(info),
         }
