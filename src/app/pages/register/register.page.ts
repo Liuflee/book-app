@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, ToastController } from '@ionic/angular';
-import { AuthService } from '../../services/auth/auth.service'; 
+import { AuthService } from '../../services/auth/auth.service';
 import { User } from '../../models/user.model';
+import emailjs from '@emailjs/browser';
 
 @Component({
   selector: 'app-register',
@@ -42,6 +43,9 @@ export class RegisterPage {
 
     try {
       await this.authService.register(this.userData, this.password);
+
+      this.sendConfirmationEmail();
+
       alert('Registro exitoso. Puedes acceder a tu cuenta.');
       this.navCtrl.navigateBack('/login');
     } catch (error) {
@@ -58,8 +62,7 @@ export class RegisterPage {
   private isValidPassword(password: string): boolean {
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{6,20}$/;
     return passwordRegex.test(password);
-}
-
+  }
 
   private async showToast(message: string) {
     const toast = await this.toastController.create({
@@ -68,5 +71,23 @@ export class RegisterPage {
       position: 'top'
     });
     toast.present();
+  }
+
+  private sendConfirmationEmail() {
+    const templateParams = {
+      user_email: this.userData.email,  
+      user_name: this.userData.name,
+    };
+
+    emailjs
+      .send('service_s2yl7xd', 'template_26suoed', templateParams, 'LK0u50hihuFdV4RRl')
+      .then(
+        (response) => {
+          console.log('Correo enviado con éxito:', response.status, response.text);
+        },
+        (error) => {
+          console.error('Error al enviar el correo:', error);
+        }
+      );
   }
 }
