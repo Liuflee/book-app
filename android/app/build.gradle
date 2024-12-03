@@ -11,18 +11,28 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+
+    signingConfigs {
+        release {
+            storeFile file("C:/Users/Sumir/Documents/my-release-key.jks")  // Ruta a tu keystore
+            storePassword "123456"  // La contraseña del keystore
+            keyAlias "my-key-alias"  // El alias de tu clave
+            keyPassword "123456"  // La contraseña de la clave
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release  // Usar la configuración de firma para el release
         }
     }
 }
+
 
 repositories {
     flatDir{
