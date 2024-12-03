@@ -8,8 +8,8 @@
   <ion-list>
     <ion-item *ngFor="let book of books">
       <ion-thumbnail slot="start">
-        <img *ngIf="book.imageUrl" [src]="book.imageUrl" alt="Cover" />
-      </ion-thumbnail>
+        <img *ngIf="book.imageUrl" [src]="getSanitizedUrl(book.imageUrl)" alt="Cover" />
+      </ion-thumbnail>      
       <ion-label>
         <h2 class="book-title">{{ book.title }}</h2>
         <h3 class="book-author" *ngIf="book.author">Por {{ book.author }}</h3>

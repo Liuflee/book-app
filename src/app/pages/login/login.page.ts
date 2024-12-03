@@ -1,15 +1,8 @@
-
-
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-} from '@angular/animations';
 import { Component } from '@angular/core';
-import { NavController, AlertController } from '@ionic/angular';
+import { Router } from '@angular/router'; // Usamos Router de Angular
 import { AuthService } from '../../services/auth/auth.service';
+import { AlertController } from '@ionic/angular';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-login',
@@ -33,16 +26,14 @@ export class LoginPage {
   buttonState: string = 'normal';
 
   constructor(
-    private navCtrl: NavController,
+    private router: Router,  // Usamos Router en lugar de NavController
     private authService: AuthService,
-    private alertController: AlertController 
-  ) {}
-
+    private alertController: AlertController
+  ) { }
 
   ionViewWillEnter() {
     this.clearFields();
   }
-
 
   clearFields() {
     this.username = '';
@@ -52,18 +43,16 @@ export class LoginPage {
   async login() {
     if (this.username && this.password) {
       try {
-
         await this.authService.login(this.username, this.password);
 
-        this.navCtrl.navigateForward('/tabs/books');
+        // Redirigir a la página de tabs después de login exitoso
+        this.router.navigate(['/tabs/books']);  // Aquí usamos Router para la redirección
       } catch (error) {
         console.error('Login error:', error);
-
-        this.showAlert('Login invalido', 'El email o contraseña no son validos. Intenta denuevo.');
+        this.showAlert('Login inválido', 'El email o la contraseña no son válidos. Intenta de nuevo.');
       }
     } else {
-
-      this.showAlert('Falta información', 'Complete los campos para seguir.');
+      this.showAlert('Falta información', 'Complete los campos para continuar.');
     }
   }
 
@@ -77,11 +66,11 @@ export class LoginPage {
   }
 
   goToResetPassword() {
-    this.navCtrl.navigateForward('/reset-password');
+    this.router.navigate(['/reset-password']); // Redirigir a la página de reset
   }
 
   goToRegister() {
-    this.navCtrl.navigateForward('/register');
+    this.router.navigate(['/register']); // Redirigir a la página de registro
   }
 
   onButtonPress() {

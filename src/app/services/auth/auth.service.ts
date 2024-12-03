@@ -1,13 +1,25 @@
 import { User } from '../../models/user.model';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from '@angular/fire/auth';
+import {
+  Auth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  sendPasswordResetEmail,
+  browserLocalPersistence,
+} from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private afAuth: Auth, private firestore: Firestore) {}
+  constructor(private afAuth: Auth, private firestore: Firestore) {
+    // Configura la persistencia de sesión
+    this.afAuth.setPersistence(browserLocalPersistence).catch((error) => {
+      console.error('Error configurando persistencia:', error);
+    });
+  }
 
   async register(userData: User, password: string) {
     const userCredential = await createUserWithEmailAndPassword(this.afAuth, userData.email, password);

@@ -13,17 +13,14 @@ const routes: Routes = [
       {
         path: 'books',
         loadChildren: () => import('../books/books.module').then(m => m.BooksPageModule),
-        canActivate: [AuthGuard] 
       },
       {
         path: 'lists',
         loadChildren: () => import('../lists/lists.module').then(m => m.ListsPageModule),
-        canActivate: [AuthGuard] 
       },
       {
         path: 'quotes',
         loadChildren: () => import('../quotes/quotes.module').then(m => m.QuotesPageModule),
-        canActivate: [AuthGuard] 
       },
       {
         path: '',

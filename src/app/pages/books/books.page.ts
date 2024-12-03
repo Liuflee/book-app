@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BookService } from '../../services/book.service';
 import { ListService } from '../../services/list/list.service';
 import { AlertController, AlertInput } from '@ionic/angular';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Book } from '../../models/book.model';
 
 @Component({
@@ -17,13 +18,15 @@ export class BooksPage implements OnInit {
   constructor(
     private bookService: BookService,
     private listService: ListService,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
     const defaultQuery = 'programming';
     this.loadBooks(defaultQuery);
     this.loadLists(); 
+    
   }
 
   async loadLists() {
@@ -36,10 +39,17 @@ export class BooksPage implements OnInit {
         id: item.id,
         title: item.volumeInfo.title,
         author: item.volumeInfo.authors ? item.volumeInfo.authors.join(', ') : 'Desconocido',
-        imageUrl: item.volumeInfo.imageLinks?.thumbnail || '',
+        //cambiar http por https
+        imageUrl: item.volumeInfo.imageLinks?.thumbnail.replace('http://', 'https://') || '',
         description: item.volumeInfo.description || ''
       })) || [];
     });
+
+    // imprimir la url de la imagen de cada libro
+  }
+  
+  getSanitizedUrl(url: string) {
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
   
   searchBooks(event: any) {

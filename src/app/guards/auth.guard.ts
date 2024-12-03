@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
-import { onAuthStateChanged } from '@firebase/auth';
+import { from, Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -9,16 +10,19 @@ import { onAuthStateChanged } from '@firebase/auth';
 export class AuthGuard implements CanActivate {
   constructor(private auth: Auth, private router: Router) {}
 
-  canActivate(): Promise<boolean> {
-    return new Promise((resolve) => {
-      onAuthStateChanged(this.auth, (user) => {
+  canActivate(): Observable<boolean> {
+    return from(Promise.resolve(this.auth.currentUser)).pipe(
+      take(1),
+      map((user) => {
         if (user) {
-          resolve(true);
+          // Si el usuario está autenticado, permitir acceso.
+          return true;
         } else {
+          // Si no está autenticado, redirigir al login.
           this.router.navigate(['/login']);
-          resolve(false);
+          return false;
         }
-      });
-    });
+      })
+    );
   }
 }
